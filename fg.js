@@ -1,4 +1,4 @@
-;(function () {
+;(function (global) {
     var fg = {};
 
     /**
@@ -22,6 +22,15 @@
     };
 
     /**
+     * fg.nextTick :: Function -> undefined
+     * Calls the function without arguments on the next turn of
+     * the event loop.
+     */
+    fg.nextTick = function (f) {
+        setTimeout(f, 0);
+    };
+
+    /**
      * fg.not :: a -> Boolean
      * Coerces {x} to a Boolean and returns the opposite.
      */
@@ -38,12 +47,12 @@
     /**
      * fg.onePerTick :: [Function] -> undefined
      * Executes the functions in {fs} in sequence, spreading them over
-     * individual turns of the event loop.
+     * individual turns of the event loop starting with the current turn.
      */
     fg.onePerTick = function (fs) {
         (fs.shift() || fg.noop)();
         if (fs.length > 0) setTimeout(fg.onePerTick.bind(null, fs), 0);
     };
 
-    window.fg = fg;
-}());
+    global.fg = fg;
+}(typeof window !== 'undefined' && window || exports));
